@@ -14,23 +14,35 @@ FIELD_NAMES = ['id', 'title', 'acceptance', 'difficulty']
 DEFAULT_FILENAME = 'tasks.csv'
 
 
-def make_list(table: BeautifulSoup) -> list:
+def make_list(table: BeautifulSoup) -> tuple[list, int]:
+    """
+    Parse bs4-extracted HTML table and return:
+    * rows as list of lists: [['cell', 'cell'], ['cell', 'cell'], ...]
+    * errors as int
+    """
+    errors = 0
     result = []
     for row in table.contents:
         r = []
-        for cell in row.contents:
-            if not cell.text:
-                continue
-            elif re.match(r'\d+\. \w', cell.text):
-                id, title = cell.text.split('. ')
-                r.append(int(id))
-                r.append(title)
-            elif re.match(r'\d+\.\d%', cell.text):
-                r.append(float(cell.text[:-1]))
-            else:
-                r.append(cell.text.lower())
+        try:
+            for cell in row.contents:
+                if not cell.text:
+                    continue
+                elif re.match(r'\d+\. \w', cell.text):
+                    id, title = cell.text.split('. ')
+                    r.append(int(id))
+                    r.append(title)
+                elif re.match(r'\d+\.\d%', cell.text):
+                    r.append(float(cell.text[:-1]))
+                else:
+                    r.append(cell.text.lower())
+        except Exception as exc:
+            logging.error(
+                'Cannot parse cell "%s" properly: %s' % (cell.text, exc))
+            errors += 1
+            r.append(cell.text)
         result.append(r)
-    return result
+    return result, errors
 
 
 def main():
@@ -38,7 +50,10 @@ def main():
     logging.info('Downloaded page. Status code: %s' % r.status_code)
     soup = BeautifulSoup(r.text, features='html.parser')
     table = soup.find(role='rowgroup')
-    rows = make_list(table)
+    if not len(table):
+        logging.exception('Cannot parse table from link')
+    rows, errors = make_list(table)
+    logging.info('Parsed %s rows from page. Errors: %s' % (len(rows), errors))
     with open(DEFAULT_FILENAME, 'w') as file:
         writer = csv.writer(file)
         writer.writerow(FIELD_NAMES)
@@ -69,5 +84,5 @@ if __name__ == '__main__':
     try:
         main()
     except Exception as e:
-        logging.exception("Unexpected error: %s" % e)
+        logging.exception('Unexpected error: %s' % e)
         sys.exit(1)
