@@ -8,3 +8,6 @@ env/
 
 # logs
 *.log
+
+# ready csv's
+*.csv
