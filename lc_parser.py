@@ -92,8 +92,8 @@ def runtest():
 if __name__ == '__main__':
     op = OptionParser()
     op.add_option("-t", "--test", action="store_true", default=False)
-    op.add_option("-l", "--log", action="store", default=None)
     op.add_option("-d", "--debug", action="store_true", default=False)
+    op.add_option("-l", "--log", action="store", default=None)
     op.add_option("-p", "--pages", action="store", default=1)
     opts, args = op.parse_args()
     progressbar.streams.wrap_stderr()  # for progressbar correct work

@@ -24,7 +24,11 @@ and cd into directory
 `$ python3 -m lc_parcer [-t, --test] [-d, --debug] [-l, --log] [-p, pages]`
 
 #### Arguments:
--t, --test:   run tests
--d, --debug:  set logging to debug (default logging level - info)
--l, --log:    write logs into file. Usage: <i>-l mylogs.log</i>. If not set, logs would go to stdout.
--p, --pages:  set max pages to parse from leetcode tasks. Usage: <i>-p 8</i>. By default, script downloads only first page.
+* -t, --test:   run tests
+* -d, --debug:  set logging to debug (default logging level - info)
+* -l, --log:    write logs into file. Usage: <i>-l mylogs.log</i>. If not set, logs would go to stdout.
+* -p, --pages:  set max pages to parse from leetcode tasks. Usage: <i>-p 8</i>. By default, script downloads only first page.
+
+***
+
+Script will save parsed data in .csv file (by default called 'tasks.csv') and place it into project directory.
